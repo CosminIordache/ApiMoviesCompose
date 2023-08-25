@@ -119,7 +119,7 @@ fun BottomSheet(isSheetOpen: MutableState<Boolean>, isDarkMode: MutableState<Boo
     ) {
         Row(
             modifier = Modifier
-                .padding(16.dp)
+                .padding(start = 25.dp, end = 25.dp, bottom = 16.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
