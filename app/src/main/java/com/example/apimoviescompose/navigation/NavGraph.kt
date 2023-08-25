@@ -1,6 +1,7 @@
 package com.example.apimoviescompose.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -13,14 +14,14 @@ import com.example.apimoviescompose.screens.view_model.MoviesViewModel
 import com.example.apimoviescompose.util.Util
 
 @Composable
-fun NavGraph(){
+fun NavGraph(isDarkMode: MutableState<Boolean>){
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = Util.MOVIE_SCREEN){
 
         composable(Util.MOVIE_SCREEN){
             val viewModel: MoviesViewModel = viewModel()
-            MoviesScreen(viewModel = viewModel, navController = navController)
+            MoviesScreen(viewModel = viewModel, navController = navController, isDarkMode)
         }
 
         composable(
