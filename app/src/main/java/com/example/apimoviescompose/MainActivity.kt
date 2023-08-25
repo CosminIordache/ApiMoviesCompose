@@ -17,7 +17,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val darkMode = mutableStateOf(false)
+        val darkMode = mutableStateOf(true)
 
         setContent {
             ApiMoviesComposeTheme(darkTheme = darkMode.value) {
