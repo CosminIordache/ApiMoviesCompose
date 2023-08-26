@@ -3,6 +3,7 @@
 package com.example.apimoviescompose.screens
 
 import android.annotation.SuppressLint
+import android.content.res.Configuration
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -43,6 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -61,135 +63,257 @@ fun DetailsScreen(itemId: Int, viewModel: MoviesViewModel, navController: NavCon
     val coroutineScope = rememberCoroutineScope()
     val movie = viewModel.listMovies.find { it.id == itemId }
 
-    Scaffold(
-        topBar = { TopBar(navController = navController) },
-    ) {
-        movie?.let {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 64.dp),
+    val orientation = LocalConfiguration.current.orientation
 
-                ) {
-
-                Box(
+    if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        Scaffold(
+            topBar = { TopBar(navController = navController) },
+        ) {
+            movie?.let {
+                LazyColumn(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(230.dp)
+                        .fillMaxSize()
+                        .padding(top = 64.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    val painterBackdrop = rememberAsyncImagePainter(
-                        model = it.backdrop_path,
-                    )
-
-                    Image(
-                        painter = painterBackdrop,
-                        contentDescription = "portada",
-                        contentScale = ContentScale.FillBounds,
-                        modifier = Modifier.fillMaxSize()
-                    )
-
-                    if (it.adult) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.adult),
-                            contentDescription = "adult",
+                    item {
+                        Box(
                             modifier = Modifier
-                                .size(35.dp)
-                                .align(Alignment.TopEnd)
-                                .padding(top = 10.dp, end = 2.dp),
-                            tint = Color.Red
+                                .fillMaxWidth()
+                                .height(280.dp)
+                        ) {
+                            val painterBackdrop = rememberAsyncImagePainter(
+                                model = it.backdrop_path,
+                            )
+
+                            Image(
+                                painter = painterBackdrop,
+                                contentDescription = "portada",
+                                contentScale = ContentScale.FillBounds,
+                                modifier = Modifier.fillMaxSize()
+                            )
+
+                            if (it.adult) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.adult),
+                                    contentDescription = "adult",
+                                    modifier = Modifier
+                                        .size(35.dp)
+                                        .align(Alignment.TopEnd)
+                                        .padding(top = 10.dp, end = 2.dp),
+                                    tint = Color.Red
+                                )
+                            }
+
+                        }
+                        Text(
+                            text = it.title,
+                            textAlign = TextAlign.Center,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 35.sp,
+                            modifier = Modifier
+                                .padding(top = 12.dp)
+                        )
+                        Row(
+                            modifier = Modifier
+                                .padding(top = 8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(5.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.DateRange,
+                                contentDescription = "Date"
+                            )
+                            Text(text = it.release_date)
+                        }
+
+                        Divider(modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 8.dp))
+
+                        Row(
+                            modifier = Modifier
+                                .padding(top = 18.dp),
+                            horizontalArrangement = Arrangement.spacedBy(5.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Star,
+                                contentDescription = "star",
+                                tint = Color.Yellow,
+                            )
+                            Text(text = it.vote_average.toString())
+                        }
+
+                        LazyRow(
+                            modifier = Modifier
+                                .padding(8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(5.dp)
+                        ) {
+                            items(it.genre_ids) { genreId ->
+                                Card(
+                                    shape = RoundedCornerShape(22.dp)
+                                ) {
+                                    Text(
+                                        text = viewModel.getGenre(genreId),
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier.padding(8.dp),
+                                        fontSize = 16.sp
+                                    )
+                                }
+                            }
+                        }
+                        Text(
+                            text = "Overview",
+                            textAlign = TextAlign.Center,
+                            fontSize = 25.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier
+                                .padding(top = 16.dp)
+                        )
+                        Divider(modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 8.dp))
+
+                        Text(
+                            text = it.overview,
+                            modifier = Modifier.padding(16.dp)
                         )
                     }
-
                 }
-                Text(
-                    text = it.title,
-                    textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 35.sp,
+            }
+        }
+    } else {
+        Scaffold(
+            topBar = { TopBar(navController = navController) },
+        ) {
+            movie?.let {
+                Column(
                     modifier = Modifier
-                        .align(
-                            Alignment.CenterHorizontally
+                        .fillMaxSize()
+                        .padding(top = 64.dp),
+
+                    ) {
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(230.dp)
+                    ) {
+                        val painterBackdrop = rememberAsyncImagePainter(
+                            model = it.backdrop_path,
                         )
-                        .padding(top = 12.dp)
-                )
-                Row(
-                    modifier = Modifier
-                        .align(
-                            Alignment.CenterHorizontally
+
+                        Image(
+                            painter = painterBackdrop,
+                            contentDescription = "portada",
+                            contentScale = ContentScale.FillBounds,
+                            modifier = Modifier.fillMaxSize()
                         )
-                        .padding(top = 8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(5.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.DateRange,
-                        contentDescription = "Date"
+
+                        if (it.adult) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.adult),
+                                contentDescription = "adult",
+                                modifier = Modifier
+                                    .size(35.dp)
+                                    .align(Alignment.TopEnd)
+                                    .padding(top = 10.dp, end = 2.dp),
+                                tint = Color.Red
+                            )
+                        }
+
+                    }
+                    Text(
+                        text = it.title,
+                        textAlign = TextAlign.Center,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 35.sp,
+                        modifier = Modifier
+                            .align(
+                                Alignment.CenterHorizontally
+                            )
+                            .padding(top = 12.dp)
                     )
-                    Text(text = it.release_date)
-                }
-
-                Divider(modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 8.dp))
-
-                Row(
-                    modifier = Modifier
-                        .align(
-                            Alignment.CenterHorizontally
+                    Row(
+                        modifier = Modifier
+                            .align(
+                                Alignment.CenterHorizontally
+                            )
+                            .padding(top = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(5.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.DateRange,
+                            contentDescription = "Date"
                         )
-                        .padding(top = 18.dp),
-                    horizontalArrangement = Arrangement.spacedBy(5.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Star,
-                        contentDescription = "star",
-                        tint = colorResource(id = R.color.yellow),
-                    )
-                    Text(text = it.vote_average.toString())
-                }
+                        Text(text = it.release_date)
+                    }
 
-                LazyRow(
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .align(Alignment.CenterHorizontally),
-                    horizontalArrangement = Arrangement.spacedBy(5.dp)
-                ) {
-                    items(it.genre_ids) { genreId ->
-                        Card(
-                            shape = RoundedCornerShape(22.dp)
-                        ) {
+                    Divider(modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 8.dp))
+
+                    Row(
+                        modifier = Modifier
+                            .align(
+                                Alignment.CenterHorizontally
+                            )
+                            .padding(top = 18.dp),
+                        horizontalArrangement = Arrangement.spacedBy(5.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = "star",
+                            tint = Color.Yellow,
+                        )
+                        Text(text = it.vote_average.toString())
+                    }
+
+                    LazyRow(
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .align(Alignment.CenterHorizontally),
+                        horizontalArrangement = Arrangement.spacedBy(5.dp)
+                    ) {
+                        items(it.genre_ids) { genreId ->
+                            Card(
+                                shape = RoundedCornerShape(22.dp)
+                            ) {
+                                Text(
+                                    text = viewModel.getGenre(genreId),
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.padding(8.dp),
+                                    fontSize = 16.sp
+                                )
+                            }
+                        }
+                    }
+                    Text(
+                        text = "Overview",
+                        textAlign = TextAlign.Center,
+                        fontSize = 25.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier
+                            .align(
+                                Alignment.CenterHorizontally
+                            )
+                            .padding(top = 16.dp)
+                    )
+                    Divider(modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 8.dp))
+                    LazyColumn(modifier = Modifier.padding(12.dp)) {
+                        item {
                             Text(
-                                text = viewModel.getGenre(genreId),
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.padding(8.dp),
-                                fontSize = 16.sp
+                                text = it.overview
                             )
                         }
                     }
-                }
-                Text(
-                    text = "Overview",
-                    textAlign = TextAlign.Center,
-                    fontSize = 25.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier
-                        .align(
-                            Alignment.CenterHorizontally
-                        )
-                        .padding(top = 16.dp)
-                )
-                Divider(modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 8.dp))
-                LazyColumn(modifier = Modifier.padding(12.dp)){
-                    item {
-                        Text(
-                            text = it.overview
-                        )
-                    }
-                }
 
 
+                }
             }
         }
     }
+
+
+
 
 
     LaunchedEffect(Unit) {

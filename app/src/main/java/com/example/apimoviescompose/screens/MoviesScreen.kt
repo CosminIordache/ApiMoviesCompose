@@ -3,6 +3,7 @@
 package com.example.apimoviescompose.screens
 
 import android.annotation.SuppressLint
+import android.content.res.Configuration
 import android.util.Log
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -33,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -51,11 +53,20 @@ fun MoviesScreen(viewModel: MoviesViewModel, navController: NavController, isDar
     val moviesState = viewModel.listMovies
     val isSheetOpen = remember { mutableStateOf(false) }
 
+    val orientation = LocalConfiguration.current.orientation
+
+    val gridSize = if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        4
+    } else {
+        2
+    }
+
+
     Scaffold(
         topBar = { TopAppBar(isSheetOpen) }
     ) {
         LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
+            columns = GridCells.Fixed(gridSize),
             modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(top = 70.dp, start = 8.dp, end = 8.dp)
         ) {
